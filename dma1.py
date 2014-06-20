@@ -2,8 +2,9 @@
 """
 1) Which horizon maximizes sharpe of returns and minimizes drawdown?
 2) How to handle maximum drawdown?
-3) Add geometric rate of return
-4) Benchmark versus sharpe of random trade
+3) Add geometric rate of return, Kelly's f
+4) Convert RoR into dollar P&L
+4) Benchmark versus sharpe of random trades
 
 Created on Fri Jun 20 09:09:39 2014
 @author: chew-z
