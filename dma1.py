@@ -12,6 +12,7 @@ import numpy as np
 import scipy.io as scio
 import matplotlib.pyplot
 
+SENSIVITY = 0.0007
 d = scio.loadmat("Close.mat") #Matlab matrix with H1Close & DMA200
 close = d['C'][:,0].tolist()
 dma = d['D'][:,0].tolist()
@@ -22,7 +23,7 @@ def sharpe(returns): # Sharpe ratio
     s=np.std(returns)
     return float(m)/s
     
-def dd(mm='MIN'): #calculates maximum drawdown
+def drawdown(mm='MIN'): #calculates maximum drawdown
     dd_index = []
     if mm == 'MAX':
         for signal in signals:
@@ -34,32 +35,49 @@ def dd(mm='MIN'): #calculates maximum drawdown
             dd_index = dd_index + [signal+dd]
     return dd_index
     
-def fuzzy_filter(k, K, T, mm='above'): #filters out signal with fuzzy logic
+def fuzzy_filter(k, K, T, mm='from_above'): #filters out signal with fuzzy logic
     cnt = 0
     for i in range(K):
-        if (mm =='below') and (dma[k-i] > close[k-i]): # zamknięcia poniżej DMA
+        if (mm =='from_below') and (dma[k-i] > close[k-i]): # zamknięcia poniżej DMA
             cnt +=1
-        elif (mm == 'above') and (dma[k-i] < close[k-i]):
+        elif (mm == 'from_above') and (dma[k-i] < close[k-i]):
             cnt +=1     
     if cnt >= T:
         return True
     else:
         return False  
 
-def signal(mm='below'): #here define your entry signal logic
-    start = np.where(np.abs(detr) < 0.0005)
+def signal(mm='from_below'): #here define your entry signal logic
+    start = np.where(np.abs(detr) < SENSIVITY)
     sig = []
     for s in start[0]:
-        if fuzzy_filter(s, 24, 6, mm):
+         if fuzzy_filter(s, 24, 6, mm): #passing mm input parameter to filter
             sig = sig + [s]
     return(np.array(sig))
+    
+def clean_signal(signals, horizon): #Only first instance of signal is taken, so clean following
+    x = signals[0]
+    temp = [x]
+    for i in range(len(signals)):
+        if signals[i] > x + horizon:
+            temp = temp + [signals[i]]
+            x = signals[i]
+    return (np.array(temp))
+
+def sell(signals, horizon, max_length): # Simple time exits 
+    temp = signals + horizon
+    for i in xrange(len(temp)):    
+        if temp[i] >= max_length:
+            temp[i] = max_length-1 #Maximum index cannot extend beyond close[]
+    return(temp)
 
 horizon = 100*24 # time exit of your strategy - random but simple check
-signals = signal('above')
+signals = signal('from_below') # buy when price crosses DMA up
+signals = clean_signal(signals, horizon)
 buys = np.take(close, signals)
-sells = np.take(close, horizon+signals)
+sells = np.take(close, sell(signals, horizon, len(close))) #horizon+signals < len(close)
 returns = (sells-buys)/buys
-drawdowns = (np.take(close, dd())-buys)/buys
+drawdowns = (np.take(close, drawdown('MIN'))-buys)/buys
 
 print sharpe(returns)
 print sharpe(drawdowns)
