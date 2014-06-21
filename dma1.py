@@ -13,17 +13,14 @@ import numpy as np
 import scipy.io as scio
 import matplotlib.pyplot
 
+import formulas as formulas
+
 SENSIVITY = 0.0007
 d = scio.loadmat("Close.mat") #Matlab matrix with H1Close & DMA200
 close = d['C'][:,0].tolist()
 dma = d['D'][:,0].tolist()
 detr=(d['C'][:,0]-d['D'][:,0]).tolist() #detrended values
 
-def sharpe(returns): # Sharpe ratio
-    m=np.mean(returns)
-    s=np.std(returns)
-    return float(m)/s
-    
 def drawdown(mm='MIN'): #calculates maximum drawdown
     dd_index = []
     if mm == 'MAX':
@@ -54,34 +51,20 @@ def signal(mm='from_below'): #here define your entry signal logic
     for s in start[0]:
          if fuzzy_filter(s, 24, 6, mm): #passing mm input parameter to filter
             sig = sig + [s]
-    return(np.array(sig))
+    return np.array(sig)
     
-def clean_signal(signals, horizon): #Only first instance of signal is taken, so clean following
-    x = signals[0]
-    temp = [x]
-    for i in range(len(signals)):
-        if signals[i] > x + horizon:
-            temp = temp + [signals[i]]
-            x = signals[i]
-    return (np.array(temp))
 
-def sell(signals, horizon, max_length): # Simple time exits 
-    temp = signals + horizon
-    for i in xrange(len(temp)):    
-        if temp[i] >= max_length:
-            temp[i] = max_length-1 #Maximum index cannot extend beyond close[]
-    return(temp)
 
 horizon = 100*24 # time exit of your strategy - random but simple check
 signals = signal('from_below') # buy when price crosses DMA up
-signals = clean_signal(signals, horizon)
+signals = formulas.clean_signal(signals, horizon)
 buys = np.take(close, signals)
-sells = np.take(close, sell(signals, horizon, len(close))) #horizon+signals < len(close)
+sells = np.take(close, formulas.sell(signals, horizon, len(close))) #horizon+signals < len(close)
 returns = (sells-buys)/buys
 drawdowns = (np.take(close, drawdown('MIN'))-buys)/buys
 
-print sharpe(returns)
-print sharpe(drawdowns)
+print formulas.sharpe(returns)
+print formulas.sharpe(drawdowns)
 # Plot accumulated returns and drawdowns
 matplotlib.pyplot.subplot(211)
 matplotlib.pyplot.plot(np.cumsum(returns))
