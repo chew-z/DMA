@@ -41,6 +41,19 @@ def gvsf(X): # G vs. f (or GAT vs f or TWR vs f)
         Y = Y + [[fi, G]]
     return np.array(Y)
     
+def ror2dolar(ror, position_size = 1.0, holding_period = 3.0, buy=3.00, coc = 0.03, commission_per_lot=50.0):
+#all is well with RoR but how much in dollars do you really make? what is your cost of carry? etc.
+#This is all just estimation and rule of thumb nothing set in stone
+    lever = 1.0/100     # such is your broker's margin requirement
+    lot_size = 100000.0 # you buy and sell 100 000 USD
+    # coc [differential of cost of money between currencies] = 3% in anual terms but of the entire lot
+    sell = (1+ror)*buy  # logicaly this is your selling price 
+    dolar_return = (sell-buy)*lot_size*lever #'dollar' it is not. It's home currency actually
+    cost_of_carry = (sell+buy)/2 * (coc/365 * holding_period)*lot_size #average by buy/sell price
+    comission = commission_per_lot * position_size            # fixed commision and spread estimated per lot
+    net_dollar_profit = dolar_return - cost_of_carry - comission
+    return net_dollar_profit, dolar_return, cost_of_carry, comission
+    
 def clean_signal(signals, horizon): #Only first instance of signal is taken, so clean following
     x = signals[0]
     temp = [x]

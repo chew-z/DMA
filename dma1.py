@@ -2,9 +2,9 @@
 """
 1) Which horizon maximizes sharpe of returns and minimizes drawdown?
 2) How to handle maximum drawdown?
-3) Add geometric rate of return, Kelly's f
+3) 
 4) Convert RoR into dollar P&L
-4) Benchmark versus sharpe of random trades
+4) Benchmarking versus sharpe(random trades)
 
 Created on Fri Jun 20 09:09:39 2014
 @author: chew-z
@@ -21,7 +21,7 @@ close = d['C'][:,0].tolist()
 dma = d['D'][:,0].tolist()
 detr=(d['C'][:,0]-d['D'][:,0]).tolist() #detrended values
 
-def drawdown(mm='MIN'): #calculates maximum drawdown
+def drawdown(mm='MIN'): #calculates index maximum drawdown points
     dd_index = []
     if mm == 'MAX':
         for signal in signals:
@@ -52,6 +52,16 @@ def signal(mm='from_below'): #here define your entry signal logic
          if fuzzy_filter(s, 24, 6, mm): #passing mm input parameter to filter
             sig = sig + [s]
     return np.array(sig)
+    
+def ror2dolar(ror, time = 3.0):
+#all is well with RoR but how much in dollars do you make? what is your cost of carry? etc.
+#in this example you buy USD against you acounting currency
+    lever = 1.0/100
+    lot_size = 100000.0
+    coc = 0.03      # 3% in anual terms but of the entire lot
+    dollar = lot_size*lever*ror
+    cost_of_carry = (coc/365 * time)*lot_size
+    return dollar, cost_of_carry
     
 
 
