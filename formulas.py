@@ -53,19 +53,4 @@ def ror2dolar(ror, position_size = 1.0, holding_period = 3.0, buy=3.00, coc = 0.
     comission = commission_per_lot * position_size            # fixed commision and spread estimated per lot
     net_dollar_profit = dolar_return - cost_of_carry - comission
     return net_dollar_profit, dolar_return, cost_of_carry, comission
-    
-def clean_signal(signals, horizon): #Only first instance of signal is taken, so clean following
-    x = signals[0]
-    temp = [x]
-    for i in range(len(signals)):
-        if signals[i] > x + horizon:
-            temp = temp + [signals[i]]
-            x = signals[i]
-    return np.array(temp)
 
-def sell(signals, horizon, max_length): # Simple time exits 
-    temp = signals + horizon
-    for i in xrange(len(temp)):    
-        if temp[i] >= max_length:
-            temp[i] = max_length-1 #Maximum index cannot extend beyond range of close[]
-    return temp

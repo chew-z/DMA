@@ -6,6 +6,7 @@ Created on Sun Jun 22 17:43:11 2014
 """
 
 import numpy as np
+import talib as talib
 
 def max_drawdown(buys_idx, sells_idx, close, mm= 'MIN'): 
 #calculates index maximum drawdown points
@@ -38,3 +39,45 @@ def signal(close, dma, detr, sensivity, mm= 'from_below'): #here define your ent
         if fuzzy_filter(close, dma, s, 24, 6, mm): #passing mm input parameter to filter
             sig = sig + [s]
     return np.array(sig)
+    
+def time_exit(signals, horizon, max_length): # Simple time exits 
+    temp = signals + horizon
+    for i in xrange(len(temp)):    
+        if temp[i] >= max_length:
+            temp[i] = max_length-1 #Maximum index cannot extend beyond range of close[]
+    return temp
+    
+def sma_exit(signals): # always in position (long exit - short entry)
+    temp = np.zeros(len(signals)) 
+    signal_idx = signals.nonzero()[0] #indeksy sygnałów
+    for s, next_s in zip(signal_idx[:-1], signal_idx[1:]): #neat trick
+    #There's no need to specify words[:-1]; zip will truncate the output to the length of the shortest arguent (in this case, the second)
+        if signals[s] == signals[next_s]:   #if signal repeats itself
+            break 
+        else:
+            temp[next_s] = signals[s]       #if signal reverses
+    temp[-1] = signals[signal_idx[-1]]  #close last position at the end
+    return temp
+    
+def clean_signal(signals, horizon): #Only first instance of signal is taken, so clean following
+    x = signals[0]
+    temp = [x]
+    for i in range(len(signals)):
+        if signals[i] > x + horizon:
+            temp = temp + [signals[i]]
+            x = signals[i]
+    return np.array(temp)
+    
+def sma_buy(close, t1=50, t2=200, filtr = 1): #simple sma crossover
+    sma1 = talib.SMA(close, t1)
+    sma2 = talib.SMA(close, t2)
+    index1 = sma1 > sma2
+    index2 = sma2 > sma1
+    signal = np.zeros(len(close))
+    for i in range(filtr, len(close)):
+        if (index1[i] and index2[i-filtr]): #not infallable logic
+            signal[i] = 1.0
+        elif (index2[i] and index1[i-filtr]):
+            signal[i] = -1.0
+
+    return signal
