@@ -14,11 +14,32 @@ def max_drawdown(buys_idx, sells_idx, close, mm= 'MIN'):
     for i in xrange(len(buys_idx)):
         arr = close[buys_idx[i]:sells_idx[i]]
         if mm == 'MAX':
-            dd = np.where(arr == np.amin(arr))
+            dd = np.where(arr == np.amax(arr))
         else:
             dd = np.where(arr == np.amin(arr))
         dd_index = dd_index + [buys_idx[i] + dd[0][0]]
     return dd_index
+
+def max_drawdown2(t, signals, close): 
+#calculates index maximum drawdown points
+#t = zip(buys.nonzero()[0], sells.nonzero()[0]) = indexes of entry and exit
+    dd_index = []
+    for i in xrange(len(t)):
+        arr = close[t[i][0]:t[i][1]]
+        if signals[t[i][0]] > 0.0: #if long entry look for minimum value
+            dd = np.where(arr == np.amin(arr))
+        else:
+            dd = np.where(arr == np.amax(arr))
+        dd_index = dd_index + [t[i][0] + dd[0][0]]
+    dd = np.take(close, dd_index) - close[signals.nonzero()[0]]
+    return dd
+    
+def returns(t, close):
+#t = zip(buys.nonzero()[0], sells.nonzero()[0]) = indexes of entry and exit    
+    returns = np.zeros(len(t))
+    for i in xrange(len(t)):
+        returns[i] = close[t[i][1]] - close[t[i][0]] #bit too complicated indexing
+    return returns
     
 def fuzzy_filter(close, dma, k, K, T, mm= 'from_above'): #filters out signal with fuzzy logic
     cnt = 0
@@ -68,7 +89,7 @@ def clean_signal(signals, horizon): #Only first instance of signal is taken, so 
             x = signals[i]
     return np.array(temp)
     
-def sma_buy(close, t1=50, t2=200, filtr = 1): #simple sma crossover
+def sma_crossover(close, t1=50, t2=200, filtr = 1): #simple sma crossover
     sma1 = talib.SMA(close, t1)
     sma2 = talib.SMA(close, t2)
     index1 = sma1 > sma2
@@ -79,5 +100,5 @@ def sma_buy(close, t1=50, t2=200, filtr = 1): #simple sma crossover
             signal[i] = 1.0
         elif (index2[i] and index1[i-filtr]):
             signal[i] = -1.0
-
+#clean the signal [exceptions,]
     return signal
