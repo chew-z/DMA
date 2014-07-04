@@ -22,23 +22,25 @@ def max_drawdown(buys_idx, sells_idx, close, mm= 'MIN'):
 
 def max_drawdown2(t, signals, close): 
 #calculates index maximum drawdown points
-#t = zip(buys.nonzero()[0], sells.nonzero()[0]) = indexes of entry and exit
-    dd_index = []
+#t = zip(buys.nonzero()[0], sells.nonzero()[0]) = paired indexes of entry and exit
+    dd = []
     for i in xrange(len(t)):
         arr = close[t[i][0]:t[i][1]]
-        if signals[t[i][0]] > 0.0: #if long entry look for minimum value
-            dd = np.where(arr == np.amin(arr))
+        sign = np.sign(arr[0])
+        if sign: #if long entry look for minimum value
+            ddi = np.where(arr == np.amin(arr)) #look for index of minimum
+            ddd = sign * (arr[ddi[0][0]] - arr[0]) #calculate drawdown
         else:
-            dd = np.where(arr == np.amax(arr))
-        dd_index = dd_index + [t[i][0] + dd[0][0]]
-    dd = np.take(close, dd_index) - close[signals.nonzero()[0]]
+            ddi = np.where(arr == np.amax(arr))
+            ddd = sign * (arr[ddi[0][0]] - arr[0])
+        dd = dd + [ddd] #drawdown is newver positive value max - 0.0
     return dd
     
-def returns(t, close):
-#t = zip(buys.nonzero()[0], sells.nonzero()[0]) = indexes of entry and exit    
+def returns(t, signals, close):
+#t = zip(buys.nonzero()[0], sells.nonzero()[0]) = paired indexes of entry and exit    
     returns = np.zeros(len(t))
     for i in xrange(len(t)):
-        returns[i] = close[t[i][1]] - close[t[i][0]] #bit too complicated indexing
+        returns[i] = np.sign(signals[t[i][0]]) * (close[t[i][1]] - close[t[i][0]]) #bit too complicated indexing
     return returns
     
 def fuzzy_filter(close, dma, k, K, T, mm= 'from_above'): #filters out signal with fuzzy logic

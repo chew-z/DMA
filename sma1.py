@@ -17,16 +17,17 @@ import rules as rules
 d_mat = scio.loadmat("Close.mat") #Matlab matrix with H1Close & DMA200
 close = np.array(d_mat['C'][:, 0])
 
-signals = rules.sma_crossover(close, 20, 200, 1) #buy when MAs cross
-exits = rules.sma_exit(signals) #long exit = short entry
-t = zip(signals.nonzero()[0], exits.nonzero()[0]) #indexes of entry and exit paired
+entry = rules.sma_crossover(close, 40, 200, 1) #buy when MAs cross
+exit = rules.sma_exit(entry) #long exit = short entry
+t = zip(entry.nonzero()[0], exit.nonzero()[0]) #indexes of entry and exit paired
 
-returns = rules.returns(t, close) #think it through (signs?)
-drawdowns = rules.max_drawdown2(t, signals, close) #think it through (signs?)
+returns = rules.returns(t, entry, close) #think it through (signs?)
+drawdowns = rules.max_drawdown2(t, entry, close) #think it through (signs?)
 
-print formulas.sharpe(returns)
-print formulas.sharpe(drawdowns)
-profits = np.cumsum(returns)
+print "Profit ", np.sum(returns)
+print "Sharpe returns", formulas.sharpe(returns)
+print "Sharpe drawdowns", formulas.sharpe(drawdowns)
+
 ## Plot accumulated returns and drawdowns
 matplotlib.pyplot.subplot(211)
 matplotlib.pyplot.plot(np.cumsum(returns))
