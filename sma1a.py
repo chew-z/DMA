@@ -9,19 +9,22 @@ Created on Fri Jul 05 19:44:39 2014
 # To ignore numpy errors:
 #     pylint: disable=E1101
 import numpy as np
-import matplotlib.pyplot
-import scipy.io as scio
+#import matplotlib.pyplot
+#import scipy.io as scio
 import formulas as formulas
 import rules as rules
+import read_mql as mql 
 
-d_mat = scio.loadmat("Close.mat") #Matlab matrix with H1Close & DMA200
-close = np.array(d_mat['C'][:, 0])
+#d_mat = scio.loadmat("Close.mat") #Matlab matrix with H1Close & DMA200
+#csv_list = mql.csv_to_list('./USDJPY60_01.csv')
+d_mat = mql.convert_cells_to_floats(mql.csv_to_list('./USDPLN60_01.csv'), 1, 3)
+close = d_mat[:, 3]
 
 xi = []
 yj = []
-sharpe = []
-for i in range(5, 100, 5):
-    for j in range(i+5, 200, 5):
+results = []
+for i in range(5, 100, 1):
+    for j in range(i+5, 200, 1):
         entry = rules.sma_crossover(close, i, j, 1) #buy when MAs cross
         exit = rules.sma_exit(entry) #long exit = short entry
         t = zip(entry.nonzero()[0], exit.nonzero()[0]) #indexes of entry and exit paired
@@ -30,29 +33,31 @@ for i in range(5, 100, 5):
         
         if np.sum(returns) > 0.0:
             print "i= ", i, " j= ", j
-            print "Total profit ", np.sum(returns)
-            print "Sharpe returns", formulas.sharpe(returns)
-            print "Sharpe drawdowns", formulas.sharpe(drawdowns)
+
             xi.append(i)
             yj.append(j)
-            sharpe.append(formulas.sharpe(returns))
-        
-matplotlib.pyplot.subplot(211)
-matplotlib.pyplot.scatter(xi, yj, marker='+', c=sharpe, cmap=matplotlib.pyplot.cm.coolwarm)
-matplotlib.pyplot.subplot(212)
-matplotlib.pyplot.hist(sharpe)
-matplotlib.pyplot.show()
-#            PL = returns
-#            f = formulas.f(PL)
-#
-#            largest_loss = min(PL)
+            PL = returns
+            f = formulas.f(PL)
+            largest_loss = min(PL)
+            f_dollar = -largest_loss/f
+            twr = formulas.TWR(PL, f)
+            g = twr ** (1.0/len(PL)) - 1
+            gat = g * (- largest_loss/f)
+            results.append([np.sum(returns), formulas.sharpe(returns), formulas.sharpe(drawdowns),
+                            f, twr, g, gat])
+#            print "Total profit ", np.sum(returns)
+#            print "Sharpe returns", formulas.sharpe(returns)
+#            print "Sharpe drawdowns", formulas.sharpe(drawdowns)
 #            print "Optimum f: ", f
-#            f_dollar = -largest_loss/f
 #            print "f dollar: ", f_dollar
-#            twr = formulas.TWR(PL, f)
 #            print "Terminal Wealth Return = ", twr
-#            g = twr ** (1.0/len(PL)) - 1
 #            print "G = ", g
-#            gat = g * (- largest_loss/f)
-#            print "Geometric Average Trade = ", gat
+#            print "Geometric Average Trade = ", gat            
+        
+results = np.array(results)
+
+#Visualization of the results moved to visualize1.py
+
+
+
     

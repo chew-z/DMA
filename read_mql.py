@@ -24,9 +24,9 @@ def convert_cells_to_floats(lista, body_starts=1, col_starts=3):
         result.append(map(float, row))
     return np.array(result)[:, col_starts: ]
 
-csv_list = csv_to_list('./EURUSD60_01.csv')
-y = convert_cells_to_floats(csv_list, 1, 3)
-
-print('first 3 rows:')
-for i in range(1, 4):
-    print(y[i])
+#csv_list = csv_to_list('./EURUSD60_01.csv')
+#y = convert_cells_to_floats(csv_list, 1, 3)
+#
+#print('first 3 rows:')
+#for i in range(1, 4):
+#    print(y[i])
