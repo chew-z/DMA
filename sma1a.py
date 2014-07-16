@@ -16,9 +16,9 @@ import rules as rules
 import read_mql as mql 
 
 #d_mat = scio.loadmat("Close.mat") #Matlab matrix with H1Close & DMA200
-#csv_list = mql.csv_to_list('./USDJPY60_01.csv')
-d_mat = mql.convert_cells_to_floats(mql.csv_to_list('./USDPLN60_01.csv'), 1, 3)
+d_mat = mql.convert_cells_to_floats(mql.csv_to_list('./EURUSD60_01.csv'), 1, 3)
 close = d_mat[:, 3]
+del d_mat
 
 xi = []
 yj = []
@@ -36,6 +36,7 @@ for i in range(5, 100, 1):
 
             xi.append(i)
             yj.append(j)
+            
             PL = returns
             f = formulas.f(PL)
             largest_loss = min(PL)
@@ -53,9 +54,11 @@ for i in range(5, 100, 1):
 #            print "Terminal Wealth Return = ", twr
 #            print "G = ", g
 #            print "Geometric Average Trade = ", gat            
-        
-results = np.array(results)
 
+results = np.array(results)
+#remove unused variables from global namespace
+del i, j, t, entry, exit
+del returns, drawdowns, PL, largest_loss, f, f_dollar, twr, g, gat
 #Visualization of the results moved to visualize1.py
 
 
