@@ -21,8 +21,8 @@ entry = rules.sma_crossover(close, 40, 200, 1) #buy when MAs cross
 exit = rules.sma_exit(entry) #long exit = short entry
 t = zip(entry.nonzero()[0], exit.nonzero()[0]) #indexes of entry and exit paired
 
-returns = rules.returns(t, entry, close) #think it through (signs?)
-drawdowns = rules.max_drawdown2(t, entry, close) #think it through (signs?)
+returns = rules.returns(t, entry, close) 
+drawdowns = rules.max_drawdown2(t, entry, close) 
 
 print "Profit ", np.sum(returns)
 print "Sharpe returns", formulas.sharpe(returns)

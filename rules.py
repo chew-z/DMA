@@ -11,7 +11,7 @@ import talib as talib
 def max_drawdown(buys_idx, sells_idx, close, mm= 'MIN'): 
 #calculates index maximum drawdown points
     dd_index = []
-    for i in xrange(len(buys_idx)):
+    for i in xrange(len(buys_idx)): #zastąpić xrange(len) zip(buys_idx, ..)
         arr = close[buys_idx[i]:sells_idx[i]]
         if mm == 'MAX':
             dd = np.where(arr == np.amax(arr))
@@ -19,28 +19,31 @@ def max_drawdown(buys_idx, sells_idx, close, mm= 'MIN'):
             dd = np.where(arr == np.amin(arr))
         dd_index = dd_index + [buys_idx[i] + dd[0][0]]
     return dd_index
-
+    
 def max_drawdown2(t, signals, close): 
-#calculates index maximum drawdown points
+#calculates maximum drawdown
 #t = zip(buys.nonzero()[0], sells.nonzero()[0]) = paired indexes of entry and exit
     dd = []
-    for i in xrange(len(t)):
-        arr = close[t[i][0]:t[i][1]]
-        sign = np.sign(arr[0])
-        if sign: #if long entry look for minimum value
-            ddi = np.where(arr == np.amin(arr)) #look for index of minimum
+    for b, s in t:
+        arr = close[b:s]    #[entry:exit]
+        sign = np.sign(arr[0])          #long or short
+        if sign: #if long entryc then max drawdown is at minimum value [lowest close]
+            ddi = np.where(arr == np.amin(arr)) #look for index of lowest close
             ddd = sign * (arr[ddi[0][0]] - arr[0]) #calculate drawdown
         else:
             ddi = np.where(arr == np.amax(arr))
             ddd = sign * (arr[ddi[0][0]] - arr[0])
-        dd = dd + [ddd] #drawdown is newver positive value max - 0.0
+        dd = dd + [ddd] 
+        #drawdown is never positive value max - 0.0
     return dd
-    
+
 def returns(t, signals, close):
 #t = zip(buys.nonzero()[0], sells.nonzero()[0]) = paired indexes of entry and exit    
     returns = np.zeros(len(t))
-    for i in xrange(len(t)):
-        returns[i] = np.sign(signals[t[i][0]]) * (close[t[i][1]] - close[t[i][0]]) #bit too complicated indexing
+    i = 0
+    for b, s in t:
+        returns[i] = np.sign(signals[b]) * (close[s] - close[b]) #bit too complicated indexing
+        i += 1
     return returns
     
 def fuzzy_filter(close, dma, k, K, T, mm= 'from_above'): #filters out signal with fuzzy logic
@@ -65,9 +68,9 @@ def signal(close, dma, detr, sensivity, mm= 'from_below'): #here define your ent
     
 def time_exit(signals, horizon, max_length): # Simple time exits 
     temp = signals + horizon
-    for i in xrange(len(temp)):    
-        if temp[i] >= max_length:
-            temp[i] = max_length-1 #Maximum index cannot extend beyond range of close[]
+    for t in temp:    
+        if t >= max_length:
+            t = max_length-1 #Maximum index cannot extend beyond range of close[]
     return temp
     
 def sma_exit(signals): # always in position (long exit - short entry)
