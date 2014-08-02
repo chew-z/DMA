@@ -1,7 +1,7 @@
 # -*- coding: utf-8 -*-
 """
-1) sma crossover part II
-2) 
+1) sma crossover - more mature code and with visualization
+2)
 
 Created on Fri Jul 05 19:44:39 2014
 @author: chew-z
@@ -13,10 +13,10 @@ import numpy as np
 #import scipy.io as scio
 import formulas as formulas
 import rules as rules
-import read_mql as mql 
+import read_mql as mql
 
 #d_mat = scio.loadmat("Close.mat") #Matlab matrix with H1Close & DMA200
-d_mat = mql.convert_cells_to_floats(mql.csv_to_list('./EURUSD60_01.csv'), 1, 3)
+d_mat = mql.convert_cells_to_floats(mql.csv_to_list('./data/EURUSD60_01.csv'), 1, 3)
 close = d_mat[:, 3]
 del d_mat
 
@@ -28,15 +28,15 @@ for i in range(5, 100, 1):
         entry = rules.sma_crossover(close, i, j, 1) #buy when MAs cross
         exit = rules.sma_exit(entry) #long exit = short entry
         t = zip(entry.nonzero()[0], exit.nonzero()[0]) #indexes of entry and exit paired
-        returns = rules.returns(t, entry, close) 
-        drawdowns = rules.max_drawdown2(t, entry, close) 
-        
+        returns = rules.returns(t, entry, close)
+        drawdowns = rules.max_drawdown2(t, entry, close)
+
         if np.sum(returns) > 0.0:
             print "i= ", i, " j= ", j
 
             xi.append(i)
             yj.append(j)
-            
+
             PL = returns
             f = formulas.f(PL)
             largest_loss = min(PL)
@@ -53,14 +53,10 @@ for i in range(5, 100, 1):
 #            print "f dollar: ", f_dollar
 #            print "Terminal Wealth Return = ", twr
 #            print "G = ", g
-#            print "Geometric Average Trade = ", gat            
+#            print "Geometric Average Trade = ", gat
 
 results = np.array(results)
 #remove unused variables from global namespace
 del i, j, t, entry, exit
 del returns, drawdowns, PL, largest_loss, f, f_dollar, twr, g, gat
 #Visualization of the results moved to visualize1.py
-
-
-
-    

@@ -9,9 +9,11 @@ import numpy as np
 import scipy.io as scio
 import matplotlib.pyplot
 import talib
+import read_mql as mql
 
-d_mat = scio.loadmat("Close.mat") #Matlab matrix with Close
-close = np.array(d_mat['C'][:, 0])
+d_mat = mql.convert_cells_to_floats(mql.csv_to_list('./data/EURUSD60_01.csv'), 1, 3)
+close = d_mat[:, 3]
+del d_mat
 
 sma = talib.SMA(close)
 mx = talib.MAX(close, 1000)
