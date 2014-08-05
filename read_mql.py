@@ -63,13 +63,14 @@ def sync(csv_listH, csv_listD):
         D1[i] = dt
         i += 1
 
-    n = len(D1); l = len(H1)
+    n = len(D1)
+    l = len(H1)
     z = zip(range(n), D1, D1[1:])
     #s = []
     s = np.zeros((n, 2), int)
     t2 = 0
     for i, d1, d2 in z:
-    #third argument in bisect_() is the starting point of our search = quicker
+    # third argument in bisect_() is the starting point of our search = quicker
         t1 = bisect.bisect_right(H1, d1, t2)  # index to the right of d1 in H1
         t2 = bisect.bisect_left(H1, d2, t1)  # index to the left of d2 in H1
         if t1:
@@ -80,9 +81,10 @@ def sync(csv_listH, csv_listD):
             s[i, 0] = t1
             s[i, 1] = t2
         #t = t1, t2
-        #s.append(t)
+        # s.append(t)
     #t = 0, 0; s.append(t)
     return D1, H1, s
+
 
 def sync2(csv_listH, csv_listD):
 # if you would like to sync different timeframes like D1 and H1

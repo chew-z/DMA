@@ -2,7 +2,7 @@
 """
 1) Which horizon maximizes sharpe of returns and minimizes drawdown?
 2) How to handle maximum drawdown?
-3) 
+3)
 4) Convert RoR into dollar P&L
 4) Benchmarking versus sharpe(random trades)
 
@@ -19,21 +19,25 @@ import formulas as formulas
 import rules as rules
 
 SENSIVITY = 0.0007
-d_mat = scio.loadmat("Close.mat") #Matlab matrix with H1Close & DMA200
+d_mat = scio.loadmat("Close.mat")  # Matlab matrix with H1Close & DMA200
 close = np.array(d_mat['C'][:, 0])
-dma = np.array(d_mat['D'][:, 0]) #tolist()
-detr=(d_mat['C'][:, 0]-d_mat['D'][:, 0]) #detrended values
-    
-#for i in xrange(1,30,5):
+dma = np.array(d_mat['D'][:, 0])  # tolist()
+detr = (d_mat['C'][:, 0] - d_mat['D'][:, 0])  # detrended values
+
+# for i in xrange(1,30,5):
 #    print formulas.ror2dolar(0.25, 1.0, float(i))
 
-horizon = 100*24 # time exit horizon of your strategy - simple and random check
-signals = rules.signal(close, dma, detr, SENSIVITY, 'from_below') # buy when price crosses DMA up
+# time exit horizon of your strategy - simple and random check
+horizon = 100 * 24
+# buy when price crosses DMA up
+signals = rules.signal(close, dma, detr, SENSIVITY, 'from_below')
 signals = rules.clean_signal(signals, horizon)
 buys = np.take(close, signals)
-sells = np.take(close, rules.time_exit(signals, horizon, len(close))) #horizon+signals < len(close)
-returns = (sells-buys)/buys
-drawdowns = (np.take(close, rules.max_drawdown(signals, signals+horizon, close, 'MIN'))-buys)/buys
+# horizon+signals < len(close)
+sells = np.take(close, rules.time_exit(signals, horizon, len(close)))
+returns = (sells - buys) / buys
+drawdowns = (np.take(close, rules.max_drawdown(
+    signals, signals + horizon, close, 'MIN')) - buys) / buys
 
 print formulas.sharpe(returns)
 print formulas.sharpe(drawdowns)
