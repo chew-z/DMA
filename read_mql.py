@@ -27,6 +27,18 @@ def convert_cells_to_floats(lista, body_starts=1, col_starts=3):
     for row in lista[body_starts:]:
         result.append(map(float, row))
     return np.array(result)[:, col_starts:]
+    
+def extract_datetime(listaD1, body_starts=1, col_starts=3):
+    
+    D1 = np.zeros(len(listaD1) - 1).astype(int)
+    i = 0
+    for row in listaD1[1:]:
+        st = row[1]  # 2nd column contains datetime of bar start = Time[]
+        dt = int(st)
+        D1[i] = dt
+        i += 1
+        
+    return D1
 
 
 def csv_to_pl(csv_file, delimiter='\t'):
