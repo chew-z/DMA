@@ -18,18 +18,22 @@ print "Total profit ", np.sum(returns)
 print "Sharpe returns", formulas.sharpe(returns)
 
 # 1 Check P&L autocorrelation
-matplotlib.pyplot.subplot(221)
-matplotlib.pyplot.plot(formulas.autocorr(PL))
+fig = matplotlib.pyplot.subplot(221)
+fig.plot(formulas.autocorr(PL))
+fig.set_title(r'Autocorrelation')
 # 2 Plot histogram P&L
-matplotlib.pyplot.subplot(222)
-matplotlib.pyplot.hist(PL)
+fig = matplotlib.pyplot.subplot(222)
+fig.hist(PL)
+fig.set_title(r'Histogram')
 # 3 Plot cumulation of P&L
-matplotlib.pyplot.subplot(223)
-matplotlib.pyplot.plot(np.cumsum(PL))
+fig = matplotlib.pyplot.subplot(223)
+fig.plot(np.cumsum(PL))
+fig.set_title(r'Cumulated returns')
 # 4 Plot G vs. f - if < 1 you are waisting time
 X = formulas.gvsf(PL)
-matplotlib.pyplot.subplot(224)
-matplotlib.pyplot.plot(X[:, 0], X[:, 1])
+fig = matplotlib.pyplot.subplot(224)
+fig.plot(X[:, 0], X[:, 1])
+fig.set_title(r'G vs f')
 
 matplotlib.pyplot.show()
 
@@ -45,3 +49,10 @@ g = twr ** (1.0 / len(PL)) - 1
 print "G = ", g
 gat = g * (- largest_loss / f)
 print "Geometric Average Trade = ", gat
+print "Largest win = ", returns.max(), " @ ", returns.argmax()
+index_sorted = np.argsort(returns)
+print "Largest losses", zip(index_sorted[0:5], returns[index_sorted[0:5]])
+print "Largest win ", zip(index_sorted[-5:-1], returns[index_sorted[-5:-1]])
+print "Average return = ", returns.mean()
+
+del twr, index_sorted, g, gat, f_dollar, f, X, largest_loss

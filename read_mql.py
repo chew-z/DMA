@@ -40,18 +40,14 @@ def extract_datetime(listaD1, body_starts=1, col_starts=3):
         
     return D1
 
-
 def csv_to_pl(csv_file, delimiter='\t'):
-    lista = csv_to_list('./data/StrategyTester2.csv', delimiter)
+    lista = csv_to_list(csv_file, delimiter)
     A = []
-    D = []
     for row in lista:
         r = map(float, row[3:])
-        sdt = row[1]
         if (r[-2] != 0.00):
             A.append(r[-2])
-            D.append(datetime.strptime(sdt, '%Y.%m.%d %H:%M'))
-    return np.array(A), D
+    return np.array(A)
 
 
 def sync(csv_listH, csv_listD):

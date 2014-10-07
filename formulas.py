@@ -1,3 +1,5 @@
+# -*- coding: utf-8 -*-
+
 # Useful functions
 import numpy as np
 import talib as talib
