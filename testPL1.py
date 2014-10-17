@@ -13,7 +13,7 @@ import read_mql as read_mql
 
 # d = scio.loadmat("PL.mat") #Matlab matrix with H1Close & DMA200
 #PL = np.array(d['PL'][:,0]) #
-PL = read_mql.csv_to_pl('./data/StrategyTesterAUDUSD.csv')
+PL = read_mql.csv_to_pl('./data/StrategyTesterGBPUSD.csv')
 # Using true random vector as P&L you can sometimes get incalculable results
 # (exceptions etc.) just try another
 # PL = 100*np.random.rand(10)-40 #skewed into profits a little for more
@@ -49,3 +49,5 @@ g = twr ** (1.0 / len(PL)) - 1
 print "G = ", round(g, 2)
 gat = g * (- largest_loss / f)
 print "Geometric Average Trade = ", round(gat, 2)
+
+del X

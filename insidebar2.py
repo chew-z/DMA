@@ -10,7 +10,7 @@ import read_mql as read_mql
 import numpy as np
 
 # 1 import data, sync H1 with D1
-csv_listD1 = read_mql.csv_to_list('./data/USDJPY1440_01.csv')
+csv_listD1 = read_mql.csv_to_list('./data/USDCHF1440_01.csv')
 
 d_mat = read_mql.convert_cells_to_floats(csv_listD1, 1, 3)
 openD1 = d_mat[:, 0]

@@ -11,6 +11,8 @@ import formulas as formulas
 
 g = globals()  # read global variables
 PL_arr = g['PL']  # import list of results - returns, sharpe etc.
+fo = []
+fd = []
 
 for PL in PL_arr:
 
@@ -55,5 +57,7 @@ for PL in PL_arr:
     #print "Largest losses", zip(index_sorted[0:5], returns[index_sorted[0:5]])
     #print "Largest win ", zip(index_sorted[-5:-1], returns[index_sorted[-5:-1]])
     print "Average return = ", returns.mean()
+    fo.append(f)
+    fd.append(f_dollar)
 
 del twr, index_sorted, g, gat, f_dollar, f, X, largest_loss
