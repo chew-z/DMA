@@ -10,7 +10,7 @@ import numpy as np
 import matplotlib.pyplot as plt
 
 # 1 import data, sync H1 with D1
-csv_listD1 = read_mql.csv_to_list('./data/USDJPY1440_01.csv')
+csv_listD1 = read_mql.csv_to_list('./data/USDCAD1440_03a.csv')
 
 d_mat = read_mql.convert_cells_to_floats(csv_listD1, 1, 3)
 closeD1 = d_mat[:, 3]

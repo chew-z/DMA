@@ -12,3 +12,5 @@ _Playing with Python, Numpy and 200 Daily Moving Average_
 #### Is DMA200 providing any useful signals?
 _Nothing sophisticated, Just playing with Python and Numpy to improve my skills and replace Matlab enviroment with Python._
 zzln@
+
+>pip install -r requirements.txt

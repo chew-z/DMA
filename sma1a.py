@@ -16,7 +16,7 @@ import rules as rules
 import read_mql as mql
 
 #d_mat = scio.loadmat("Close.mat") #Matlab matrix with H1Close & DMA200
-d_mat = mql.convert_cells_to_floats(mql.csv_to_list('./data/EURUSD60_01.csv'), 1, 3)
+d_mat = mql.convert_cells_to_floats(mql.csv_to_list('./data/USDJPY1440_03a.csv'), 1, 3)
 close = d_mat[:, 3]
 del d_mat
 

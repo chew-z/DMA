@@ -4,6 +4,7 @@ Created on Wed Jul 16 09:17:43 2014
 
 @author: chew-z
 """
+
 from datetime import datetime
 import bisect
 import csv
@@ -27,9 +28,9 @@ def convert_cells_to_floats(lista, body_starts=1, col_starts=3):
     for row in lista[body_starts:]:
         result.append(map(float, row))
     return np.array(result)[:, col_starts:]
-    
+
 def extract_datetime(listaD1, body_starts=1, col_starts=3):
-    
+
     D1 = np.zeros(len(listaD1) - 1).astype(int)
     i = 0
     for row in listaD1[1:]:
@@ -37,8 +38,20 @@ def extract_datetime(listaD1, body_starts=1, col_starts=3):
         dt = int(st)
         D1[i] = dt
         i += 1
-        
+
     return D1
+
+def extract_timestamp_as_dt(lista, body_starts=1, col_starts=1):
+# extracts MQL Timestamp and converts to Python datetime
+    TS = np.zeros(len(lista)).astype(int)
+    i = 0
+    for row in lista[body_starts:]:
+        ts = row[col_starts]  # 2nd column contains datetime of bar start = Time[]
+        TS[i] = int(ts)
+        i += 1
+
+    dt = [datetime.fromtimestamp(t) for t in TS]
+    return np.array(dt)
 
 def csv_to_pl(csv_file, delimiter='\t'):
     lista = csv_to_list(csv_file, delimiter)
